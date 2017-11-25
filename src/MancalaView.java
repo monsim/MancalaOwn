@@ -18,10 +18,12 @@ public class MancalaView extends JFrame {
 	ButtonGroup bg;
 	ButtonGroup bg2; //button group for strategy buttons
 	private MancalaBoardFormatter board;
+	private boolean isStarted; //boolean to check if the start button has been pressed
 	
 	public MancalaView(MancalaModel model) {
 		
 		context = new MancalaBoardContext();
+		isStarted = false; 
 		
 		// Connect the view to the model
 		this.model = model;
@@ -62,12 +64,13 @@ public class MancalaView extends JFrame {
 		topRightPanel.add(topRightStonePanel, BorderLayout.NORTH);
 		topRightPanel.add(topRightStrategyPanel, BorderLayout.SOUTH);
 		
-		MancalaView outsideThis = this;
+//		MancalaView outsideThis = this;
 		
 		// Top left panel, just all push buttons
 		JPanel topLeftPanel = new JPanel();
 		buttonStart = new Button("Start");
 		buttonStart.addActionListener(event -> {
+			isStarted = true;
 			model.emptyPits();
 			model.setPlayerTurn('A');
 			model.populatePits(Integer.parseInt(bg.getSelection().getActionCommand()));
@@ -76,12 +79,13 @@ public class MancalaView extends JFrame {
 			if (input == 1) { //rounded rectangle
 				board = new MancalaBoardPanelRound(1000,400,model);
 				System.out.println("rounded rectangle");
+				addBoard();
 //				board.format(formatter);
-				outsideThis.add((Component) board, BorderLayout.CENTER);
+//				outsideThis.add((Component) board, BorderLayout.CENTER);
 			} else {			//input == 2. normal rectangle
 				board = new MancalaBoardPanelRectangle(1000,400,model);
 				System.out.println("rectangle");
-				outsideThis.add((Component) board, BorderLayout.CENTER);
+				addBoard();
 			}
 			board.clearStones();
 			board.populateStones(model.getPits());
@@ -112,14 +116,25 @@ public class MancalaView extends JFrame {
 		
 		// Put all panels in one frame
 		add(topPanel, BorderLayout.NORTH);
-//		add(board, BorderLayout.CENTER);
+//		if (isStarted) {
+//			add((Component)board, BorderLayout.CENTER); 		//problem: trying to set board before its even started/initiated. before startButton is pushed. 
+//			board.setVisible(false);
+//		}
 		setTitle("Mancala");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setMaximumSize(new Dimension(1400,1400));
+		setMinimumSize(new Dimension(1400,1400));
+		setSize(new Dimension(1400,1400));
 		pack();
 		setLocationRelativeTo(null); // Center the window
 		setVisible(true);
-		board.setVisible(false);
+		
 
+	}
+	
+	public void addBoard() {
+		add((Component)board, BorderLayout.CENTER); 		//problem: trying to set board before its even started/initiated. before startButton is pushed. 
+		board.setVisible(false);
 	}
 
 	public Button getButtonStart() {
